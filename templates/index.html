@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Video and Audio Stream</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+</head>
+<body>
+    <h1>WebSocket Video and Audio Stream</h1>
+    <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
+    <audio id="audio" controls autoplay></audio>
+
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('WebSocket connection established');
+            socket.emit('stream');
+        });
+
+        socket.on('video_frame', (data) => {
+            document.getElementById('video').src = data.image;
+        });
+
+        socket.on('audio_data', (data) => {
+            const audioElement = document.getElementById('audio');
+            const blob = new Blob([new Uint8Array(atob(data.audio).split('').map(c => c.charCodeAt(0)))], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            audioElement.src = url;
+        });
+    </script>
+</body>
+</html>
