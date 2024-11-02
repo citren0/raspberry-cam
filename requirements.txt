@@ -2,4 +2,4 @@ flask
 opencv-python
 Flask-SocketIO
 gevent-websocket
-pyaudio
+# pyaudio

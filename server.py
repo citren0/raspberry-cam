@@ -3,25 +3,25 @@ import cv2
 from flask_socketio import SocketIO, emit
 import base64
 import time
-import pyaudio
+# import pyaudio
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-def generate_audio():
-    chunk = 1024
-    p = pyaudio.PyAudio()
+# def generate_audio():
+#     chunk = 1024
+#     p = pyaudio.PyAudio()
 
-    stream = p.open(format=pyaudio.paInt16,
-                    channels=1,
-                    rate=44100,
-                    input=True,
-                    frames_per_buffer=chunk)
+#     stream = p.open(format=pyaudio.paInt16,
+#                     channels=1,
+#                     rate=44100,
+#                     input=True,
+#                     frames_per_buffer=chunk)
 
-    while True:
-        data = stream.read(chunk)
-        audio_data = base64.b64encode(data).decode('utf-8')
-        yield audio_data
+#     while True:
+#         data = stream.read(chunk)
+#         audio_data = base64.b64encode(data).decode('utf-8')
+#         yield audio_data
 
 
 def generate_frames():
@@ -46,11 +46,11 @@ def handle_video():
         emit('video_frame', {'image': frame}, broadcast=True)
         time.sleep(0.05)
 
-@socketio.on('audio_stream')
-def handle_audio():
-    for audio in generate_audio():
-        emit('audio_data', {'audio': audio}, broadcast=True)
-        time.sleep(0.01)
+# @socketio.on('audio_stream')
+# def handle_audio():
+#     for audio in generate_audio():
+#         emit('audio_data', {'audio': audio}, broadcast=True)
+#         time.sleep(0.01)
 
 
 def main():
