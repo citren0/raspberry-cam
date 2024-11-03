@@ -25,7 +25,7 @@ def generate_audio():
 
 
 def generate_frames():
-    camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture(2)
     while True:
         ret, img = camera.read()
         if ret:
