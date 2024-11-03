@@ -9,12 +9,6 @@ from picamera2 import Picamera2
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-cam = Picamera2()
-height = 480
-width = 640
-middle = (int(width / 2), int(height / 2))
-cam.configure(cam.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
-
 # def generate_audio():
 #     chunk = 1024
 #     p = pyaudio.PyAudio()
@@ -32,7 +26,11 @@ cam.configure(cam.create_video_configuration(main={"format": 'RGB888', "size": (
 
 
 def generate_frames():
-    camera = cv2.VideoCapture(0)
+    cam = Picamera2()
+    height = 480
+    width = 640
+    middle = (int(width / 2), int(height / 2))
+    cam.configure(cam.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
     while True:
         img = cam.capture_array()
         if ret:
