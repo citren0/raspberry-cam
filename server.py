@@ -19,6 +19,8 @@ def get_frame():
                 _, buffer = cv2.imencode('.jpg', img)
                 frame = base64.b64encode(buffer).decode('utf-8')
                 return f"data:image/jpeg;base64,{frame}\n\n"
+    else:
+        return f"data:image/jpeg;base64,asdf\n\n"
 
 
 # Flask routes.
@@ -37,8 +39,8 @@ def get_frame_socket():
 
 def main():
     lock = threading.Lock()
-    camera = cv2.VideoCapture(2)
-    socketio.run(app, debug=True, port=5000, host="192.168.0.140")
+    camera = cv2.VideoCapture(0)
+    socketio.run(app, debug=True, port=5000, host="192.168.0.140", use_reloader=False)
 
 
 if __name__ == "__main__":
