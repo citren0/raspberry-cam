@@ -5,17 +5,17 @@ import base64
 import time
 import threading
 from threading import Lock
-
+import sys
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-
 frame = ""
 lock = Lock()
 
 
 def generate_frames():
     global lock
+    global frame
     camera = cv2.VideoCapture(0)
     while True:
         ret, img = camera.read()
@@ -26,7 +26,6 @@ def generate_frames():
                 frame = f"data:image/jpeg;base64,{buff}\n\n"
             time.sleep(0.05)
 
-
 # Flask routes.
 @app.route('/')
 def index():
@@ -34,14 +33,12 @@ def index():
 
 
 # SocketIO "routes".
-@socketio.on('video_stream')
-def video_stream():
+@socketio.on('get_frame')
+def get_frame():
     global lock
-    while True:
-        with lock:
-            emit('video_frame', {'image': frame})
-        time.sleep(0.05)
-
+    global frame
+    with lock:
+        emit('video_frame', {'image': frame}, broadcast=True)
 
 
 

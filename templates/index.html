@@ -16,10 +16,10 @@
         socket.on('connect', () => {
             console.log('WebSocket connection established');
 
-            setTimeout(() =>
+            setInterval(() =>
             {
-                socket.emit('video_stream');
-            }, 1000);
+                socket.emit('get_frame');
+            }, 100);
         });
 
         socket.on('video_frame', (data) => {
