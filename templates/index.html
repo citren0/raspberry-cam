@@ -13,14 +13,24 @@
     <script>
         const socket = io();
 
-        socket.on('connect', () => {
-            console.log('WebSocket connection established');
-            socket.emit('video_stream');
-            socket.emit('audio_stream');
+        const getFrame = () =>
+        {
+            socket.emit("get_frame");
+        };
+
+        socket.on('connect', () =>
+        {
+            getFrame();
         });
 
-        socket.on('video_frame', (data) => {
+        socket.on('video_frame', (data) =>
+        {
             document.getElementById('video').src = data.image;
+
+            setTimeout(() =>
+            {
+                getFrame();
+            }, 100);
         });
     </script>
 </body>
