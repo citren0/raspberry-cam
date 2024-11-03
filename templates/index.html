@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Video and Audio Stream</title>
+    <title>Stream</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 </head>
 <body>
-    <h1>WebSocket Video and Audio Stream</h1>
+    <h1>Stream</h1>
     <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
-    <audio controls>
-        <source src="{{ url_for('audio') }}" type="audio/x-wav;codec=pcm">
-        Your browser does not support the audio element.
-    </audio>
 
     <script>
         const socket = io();
