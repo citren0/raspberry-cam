@@ -4,12 +4,14 @@ from flask_socketio import SocketIO, emit
 import base64
 import time
 import threading
+from threading import Lock
 
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
 frame = ""
+lock = Lock()
 
 
 def generate_frames():
@@ -19,7 +21,9 @@ def generate_frames():
         if ret:
             _, buffer = cv2.imencode('.jpg', img)
             buff = base64.b64encode(buffer).decode('utf-8')
-            frame = f"data:image/jpeg;base64,{buff}\n\n"        
+            with lock:
+                frame = f"data:image/jpeg;base64,{buff}\n\n"
+            time.sleep(0.05)
 
 
 # Flask routes.
@@ -32,7 +36,8 @@ def index():
 @socketio.on('video_stream')
 def handle_video():
     while True:
-        emit('video_frame', {'image': frame}, broadcast=True)
+        with lock:
+            emit('video_frame', {'image': frame})
         time.sleep(0.05)
 
 
