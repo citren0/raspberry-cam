@@ -20,7 +20,7 @@ def generate_audio():
 
     while True:
         data = stream.read(chunk)
-        yield data.hex()
+        yield list(data)
 
 
 def generate_frames():
