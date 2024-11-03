@@ -3,3 +3,4 @@ opencv-python
 Flask-SocketIO
 gevent-websocket
 # pyaudio
+picamera2

@@ -3,10 +3,17 @@ import cv2
 from flask_socketio import SocketIO, emit
 import base64
 import time
+from picamera2 import Picamera2
 # import pyaudio
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+cam = Picamera2()
+height = 480
+width = 640
+middle = (int(width / 2), int(height / 2))
+cam.configure(cam.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
 
 # def generate_audio():
 #     chunk = 1024
@@ -27,7 +34,7 @@ socketio = SocketIO(app)
 def generate_frames():
     camera = cv2.VideoCapture(0)
     while True:
-        ret, img = camera.read()
+        img = cam.capture_array()
         if ret:
             _, buffer = cv2.imencode('.jpg', img)
             frame = base64.b64encode(buffer).decode('utf-8')
