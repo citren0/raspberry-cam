@@ -15,6 +15,7 @@ lock = Lock()
 
 
 def generate_frames():
+    global lock
     camera = cv2.VideoCapture(0)
     while True:
         ret, img = camera.read()
@@ -34,7 +35,8 @@ def index():
 
 # SocketIO "routes".
 @socketio.on('video_stream')
-def handle_video():
+def video_stream():
+    global lock
     while True:
         with lock:
             emit('video_frame', {'image': frame})

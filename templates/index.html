@@ -15,7 +15,11 @@
 
         socket.on('connect', () => {
             console.log('WebSocket connection established');
-            socket.emit('video_stream');
+
+            setTimeout(() =>
+            {
+                socket.emit('video_stream');
+            }, 1000);
         });
 
         socket.on('video_frame', (data) => {
