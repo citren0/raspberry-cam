@@ -4,8 +4,7 @@ from flask_socketio import SocketIO, emit
 import base64
 import time
 # import pyaudio
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+from picamera2 import PiCamera2
 
 
 app = Flask(__name__)
@@ -28,11 +27,12 @@ socketio = SocketIO(app)
 
 
 def generate_frames():
-    camera = PiCamera()
-    rawCapture = PiRGBArray(camera)
+    cam = Picamera2()
+    cam.configure(picam2.create_preview_configuration())
+    cam.start()
 
-    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-        image = frame.array
+    while True:
+        img = cam.capture_array()
         _, buffer = cv2.imencode('.jpg', image)
         frame = base64.b64encode(buffer).decode('utf-8')
         rawCapture.truncate(0)
