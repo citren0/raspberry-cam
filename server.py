@@ -3,8 +3,35 @@ import cv2
 from flask_socketio import SocketIO, emit
 import base64
 import time
-from picamera2 import Picamera2
 # import pyaudio
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+
+# Initialize the camera
+
+
+# Allow the camera to warm up
+time.sleep(0.1)
+
+# Capture frames continuously
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    image = frame.array
+
+    # Display the image
+    cv2.imshow("Frame", image)
+
+    # Clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
+
+    # Exit the loop when 'q' is pressed
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Cleanup
+cv2.destroyAllWindows()
+
+
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -26,17 +53,15 @@ socketio = SocketIO(app)
 
 
 def generate_frames():
-    cam = Picamera2()
-    height = 480
-    width = 640
-    middle = (int(width / 2), int(height / 2))
-    cam.configure(cam.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
-    while True:
-        img = cam.capture_array()
-        if ret:
-            _, buffer = cv2.imencode('.jpg', img)
-            frame = base64.b64encode(buffer).decode('utf-8')
-            yield f"data:image/jpeg;base64,{frame}\n\n"
+    camera = PiCamera()
+    rawCapture = PiRGBArray(camera)
+
+    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        image = frame.array
+        _, buffer = cv2.imencode('.jpg', image)
+        frame = base64.b64encode(buffer).decode('utf-8')
+        rawCapture.truncate(0)
+        yield f"data:image/jpeg;base64,{frame}\n\n"
 
 
 # Flask routes.
