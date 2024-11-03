@@ -3,10 +3,13 @@ import cv2
 from flask_socketio import SocketIO, emit
 import base64
 import time
+import threading
 
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+frame = ""
 
 
 def generate_frames():
@@ -15,8 +18,8 @@ def generate_frames():
         ret, img = camera.read()
         if ret:
             _, buffer = cv2.imencode('.jpg', img)
-            frame = base64.b64encode(buffer).decode('utf-8')
-            yield f"data:image/jpeg;base64,{frame}\n\n"        
+            buff = base64.b64encode(buffer).decode('utf-8')
+            frame = f"data:image/jpeg;base64,{buff}\n\n"        
 
 
 # Flask routes.
@@ -28,7 +31,7 @@ def index():
 # SocketIO "routes".
 @socketio.on('video_stream')
 def handle_video():
-    for frame in generate_frames():
+    while True:
         emit('video_frame', {'image': frame}, broadcast=True)
         time.sleep(0.05)
 
@@ -36,6 +39,9 @@ def handle_video():
 
 
 def main():
+    producer = threading.Thread(target=generate_frames, args=())
+    producer.start()
+
     socketio.run(app, debug=True, port=5000, host="192.168.0.140", use_reloader=False)
 
 
