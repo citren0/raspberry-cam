@@ -7,31 +7,6 @@ import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 
-# Initialize the camera
-
-
-# Allow the camera to warm up
-time.sleep(0.1)
-
-# Capture frames continuously
-for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-    image = frame.array
-
-    # Display the image
-    cv2.imshow("Frame", image)
-
-    # Clear the stream in preparation for the next frame
-    rawCapture.truncate(0)
-
-    # Exit the loop when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Cleanup
-cv2.destroyAllWindows()
-
-
-
 
 app = Flask(__name__)
 socketio = SocketIO(app)
