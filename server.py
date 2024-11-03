@@ -4,8 +4,6 @@ from flask_socketio import SocketIO, emit
 import base64
 import time
 # import pyaudio
-from picamera2 import Picamera2
-
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -27,16 +25,13 @@ socketio = SocketIO(app)
 
 
 def generate_frames():
-    cam = Picamera2()
-    cam.configure(picam2.create_preview_configuration())
-    cam.start()
-
+    camera = cv2.VideoCapture(0)
     while True:
-        img = cam.capture_array()
-        _, buffer = cv2.imencode('.jpg', img)
-        frame = base64.b64encode(buffer).decode('utf-8')
-        rawCapture.truncate(0)
-        yield f"data:image/jpeg;base64,{frame}\n\n"
+        ret, img = camera.read()
+        if ret:
+            _, buffer = cv2.imencode('.jpg', img)
+            frame = base64.b64encode(buffer).decode('utf-8')
+            yield f"data:image/jpeg;base64,{frame}\n\n"
 
 
 # Flask routes.
@@ -59,7 +54,7 @@ def handle_video():
 
 
 def main():
-    socketio.run(app, debug=True, port=5000, host="192.168.0.140")
+    socketio.run(app, debug=True)
 
 
 if __name__ == "__main__":

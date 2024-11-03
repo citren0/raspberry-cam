@@ -21,6 +21,7 @@
 
         socket.on('video_frame', (data) => {
             document.getElementById('video').src = data.image;
+            console.log("frame");
         });
 
         socket.on('audio_data', (data) => {
