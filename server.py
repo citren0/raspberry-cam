@@ -54,7 +54,7 @@ def handle_video():
 
 
 def main():
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, port=5000, host="192.168.0.140")
 
 
 if __name__ == "__main__":
