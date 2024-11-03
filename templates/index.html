@@ -22,7 +22,6 @@
 
         socket.on('video_frame', (data) => {
             document.getElementById('video').src = data.image;
-            console.log("frame");
         });
 
         const audioElement = document.getElementById('audio');
@@ -30,7 +29,7 @@
         let source;
 
         socket.on('audio_data', (msg) => {
-            const audioBuffer = new Uint8Array(msg.data.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            const audioBuffer = new Uint8Array(msg.audio.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
             audioContext.decodeAudioData(audioBuffer.buffer, (buffer) => {
                 if (source) {
                     source.stop();
