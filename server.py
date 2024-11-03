@@ -7,17 +7,16 @@ import time
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-camera = ""
 
 
 def generate_frames():
+    camera = cv2.VideoCapture(0)
     while True:
-        if camera != "":
-            ret, img = camera.read()
-            if ret:
-                _, buffer = cv2.imencode('.jpg', img)
-                frame = base64.b64encode(buffer).decode('utf-8')
-                yield f"data:image/jpeg;base64,{frame}\n\n"        
+        ret, img = camera.read()
+        if ret:
+            _, buffer = cv2.imencode('.jpg', img)
+            frame = base64.b64encode(buffer).decode('utf-8')
+            yield f"data:image/jpeg;base64,{frame}\n\n"        
 
 
 # Flask routes.
@@ -37,7 +36,6 @@ def handle_video():
 
 
 def main():
-    camera = cv2.VideoCapture(0)
     socketio.run(app, debug=True, port=5000, host="192.168.0.140", use_reloader=False)
 
 
