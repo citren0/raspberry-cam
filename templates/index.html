@@ -16,18 +16,32 @@
 
         let bufferSize = 44100;
 
+        var secret = "";
+
+        document.addEventListener("onload", () =>
+        {
+            secret = prompt("Enter the secret password.", "");
+        });
+
         socket.on('connect', () => {
             console.log('WebSocket connection established');
 
             setInterval(() =>
             {
-                socket.emit('get_frame');
+                if (secret != "")
+                {
+                    socket.emit('get_frame', { secret: secret, });
+                }
             }, 100);
 
             setInterval(() =>
             {
-                socket.emit('get_audio');
+                if (secret != "")
+                {
+                    socket.emit('get_audio', { secret: secret, });
+                }
             }, 100);
+
         });
 
         socket.on('video_frame', (data) => {
