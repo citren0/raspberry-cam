@@ -9,17 +9,16 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 def generate_audio():
-    chunk = 1024
     p = pyaudio.PyAudio()
 
     stream = p.open(format=pyaudio.paInt16,
                     channels=1,
                     rate=44100,
-                    input=True,
-                    frames_per_buffer=chunk)
+                    output=True,
+                    stream_callback=None)
 
     while True:
-        data = stream.read(chunk)
+        data = stream.read(1024)
         yield data
 
 
