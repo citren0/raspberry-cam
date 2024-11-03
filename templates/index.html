@@ -9,9 +9,12 @@
 <body>
     <h1>Stream</h1>
     <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
+    <audio id="audio" controls autoplay></audio>
 
     <script>
         const socket = io();
+
+        let bufferSize = 44100;
 
         socket.on('connect', () => {
             console.log('WebSocket connection established');
@@ -20,10 +23,26 @@
             {
                 socket.emit('get_frame');
             }, 100);
+
+            setInterval(() =>
+            {
+                socket.emit('get_audio');
+            }, 100);
         });
 
         socket.on('video_frame', (data) => {
             document.getElementById('video').src = data.image;
+        });
+
+        socket.on('audio_data', function(msg) {
+            let audioContext = new window.AudioContext();
+            let byteArray = new Float32Array(msg.data);
+            var ab = audioContext.createBuffer(1, byteArray.length, audioContext.sampleRate);
+            var bs = audioContext.createBufferSource();
+            ab.getChannelData(0).set(byteArray);
+            bs.buffer = ab;
+            bs.connect(audioContext.destination);
+            bs.start(0);
         });
     </script>
 </body>
