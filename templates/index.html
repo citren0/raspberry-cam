@@ -29,7 +29,13 @@
         let source;
 
         socket.on('audio_data', (msg) => {
-            const audioBuffer = new Uint8Array(msg.audio);
+            // Create an AudioBuffer
+            const numSamples = 1024;
+            const sampleRate = 44100;
+            const audioBuffer = audioContext.createBuffer(1, numSamples, sampleRate);
+
+            // Copy the raw audio data into the AudioBuffer
+            audioBuffer.copyToChannel(msg.audio, 0);
             source = audioContext.createBufferSource();
             source.buffer = audioBuffer.buffer;
             source.connect(audioContext.destination);
