@@ -29,17 +29,11 @@
         let source;
 
         socket.on('audio_data', (msg) => {
-            console.log(msg)
-            const audioBuffer = new Uint8Array(msg.audio.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-            audioContext.decodeAudioData(audioBuffer.buffer, (buffer) => {
-                if (source) {
-                    source.stop();
-                }
-                source = audioContext.createBufferSource();
-                source.buffer = buffer;
-                source.connect(audioContext.destination);
-                source.start(0);
-            });
+            const audioBuffer = new Uint8Array(msg.audio);
+            source = audioContext.createBufferSource();
+            source.buffer = audioBuffer.buffer;
+            source.connect(audioContext.destination);
+            source.start(0);
         });
     </script>
 </body>
