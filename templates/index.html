@@ -17,6 +17,7 @@
         socket.on('connect', () => {
             console.log('WebSocket connection established');
             socket.emit('video_stream');
+            socket.emit('audio_stream');
         });
 
         socket.on('video_frame', (data) => {
