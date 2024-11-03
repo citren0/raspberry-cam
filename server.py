@@ -20,7 +20,7 @@ def generate_audio():
 
     while True:
         data = stream.read(chunk)
-        yield list(data)
+        yield data
 
 
 def generate_frames():
@@ -37,6 +37,11 @@ def generate_frames():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/audio')
+def audio():
+    return Response(generate_audio(), 
+                    mimetype='audio/x-wav')
 
 
 @socketio.on('video_stream')

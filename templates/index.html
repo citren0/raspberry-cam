@@ -9,7 +9,10 @@
 <body>
     <h1>WebSocket Video and Audio Stream</h1>
     <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
-    <audio id="audio" controls autoplay></audio>
+    <audio controls autoplay>
+        <source src="/audio" type="audio/x-wav">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         const socket = io();
@@ -22,24 +25,6 @@
 
         socket.on('video_frame', (data) => {
             document.getElementById('video').src = data.image;
-        });
-
-        const audioElement = document.getElementById('audio');
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        let source;
-
-        socket.on('audio_data', (msg) => {
-            // Create an AudioBuffer
-            const numSamples = 1024;
-            const sampleRate = 44100;
-            const audioBuffer = audioContext.createBuffer(1, numSamples, sampleRate);
-
-            // Copy the raw audio data into the AudioBuffer
-            audioBuffer.copyToChannel(msg.audio, 0);
-            source = audioContext.createBufferSource();
-            source.buffer = audioBuffer.buffer;
-            source.connect(audioContext.destination);
-            source.start(0);
         });
     </script>
 </body>
