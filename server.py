@@ -1,3 +1,5 @@
+from flask import Flask, Response, render_template
+import cv2
 from flask_socketio import SocketIO, emit
 import base64
 import time
@@ -7,6 +9,10 @@ import sys
 import pyaudio
 import base64
 import struct
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -16,6 +22,8 @@ frame_lock = Lock()
 
 audio = b""
 audio_lock = Lock()
+
+secret = "asdf"
 
 
 # Threads
@@ -58,18 +66,22 @@ def index():
 
 # SocketIO "routes".
 @socketio.on('get_frame')
-def get_frame():
+def get_frame(msg=None):
     global frame_lock
     global frame
-    with frame_lock:
-        emit('video_frame', {'image': frame}, broadcast=False)
+    global secret
+    if msg != None and 'secret' in msg and msg['secret'] == os.getenv('SERVER_SECRET'):
+        with frame_lock:
+            emit('video_frame', {'image': frame}, broadcast=False)
 
 @socketio.on('get_audio')
-def get_audio():
+def get_audio(msg=None):
     global audio_lock
     global audio
-    with audio_lock:
-        emit('audio_data', {'data': list(struct.unpack('f' * (len(audio) // 4), audio))}, broadcast=False)
+    global secret
+    if msg != None and 'secret' in msg and msg['secret'] == os.getenv('SERVER_SECRET'):
+        with audio_lock:
+            emit('audio_data', {'data': list(struct.unpack('f' * (len(audio) // 4), audio))}, broadcast=False)
 
 
 def main():

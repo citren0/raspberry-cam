@@ -1,7 +1,6 @@
 server {
         listen 2443 ssl;
         listen [::]:2443 ssl;
-        http2 on;
         server_name server-1.verifyitextension.com;
         ssl_certificate /etc/certs/cert.crt;
         ssl_certificate_key /etc/certs/key.key;

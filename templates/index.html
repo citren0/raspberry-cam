@@ -10,17 +10,19 @@
     <h1>Stream</h1>
     <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
     <audio id="audio" controls autoplay></audio>
+    <input id="secret" type="password" />
 
     <script>
         const socket = io();
 
-        let bufferSize = 44100;
+        let bufferSize = 4410;
 
-        var secret = "";
+        let secret = "";
 
-        document.addEventListener("onload", () =>
+        document.getElementById("secret").addEventListener("input", (e) =>
         {
-            secret = prompt("Enter the secret password.", "");
+            secret = document.getElementById("secret").value;
+            console.log(secret);
         });
 
         socket.on('connect', () => {
@@ -28,18 +30,12 @@
 
             setInterval(() =>
             {
-                if (secret != "")
-                {
-                    socket.emit('get_frame', { secret: secret, });
-                }
+                socket.emit('get_frame', { 'secret': secret, });
             }, 100);
 
             setInterval(() =>
             {
-                if (secret != "")
-                {
-                    socket.emit('get_audio', { secret: secret, });
-                }
+                socket.emit('get_audio', { 'secret': secret, });
             }, 100);
 
         });
