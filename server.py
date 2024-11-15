@@ -32,11 +32,12 @@ def generate_frames():
     global frame_lock
     global frame
     picam = Picamera2()
-    picam.configure(picam.create_still_configuration())
+    picam.configure(picam.create_video_configuration())
     picam.start()
     while True:
         img = picam.capture_array()
-        _, buffer = cv2.imencode('.jpg', img)
+        frame_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        _, buffer = cv2.imencode('.jpg', frame_rgb)
         buff = base64.b64encode(buffer).decode('utf-8')
         with frame_lock:
             frame = f"data:image/jpeg;base64,{buff}\n\n"
@@ -46,17 +47,17 @@ def generate_audio():
     global audio_lock
     global audio
     # Audio configuration
-    CHUNK = 4410
+    CHUNK = 2205
     FORMAT = pyaudio.paFloat32
     CHANNELS = 1
-    RATE = 44100
+    RATE = 22050
 
     mic = pyaudio.PyAudio()
     stream = mic.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
     while True:
         with audio_lock:
-            audio = stream.read(CHUNK)
+            audio = stream.read(CHUNK, exception_on_overflow=False)
         time.sleep(0.1)
 
 
@@ -90,8 +91,8 @@ def main():
     frame_producer = threading.Thread(target=generate_frames, args=())
     frame_producer.start()
 
-#    audio_producer = threading.Thread(target=generate_audio, args=())
-#    audio_producer.start()
+    audio_producer = threading.Thread(target=generate_audio, args=())
+    audio_producer.start()
 
     socketio.run(app, debug=False, port=5000, host="0.0.0.0", use_reloader=False)
 
