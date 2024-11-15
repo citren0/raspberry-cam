@@ -1,59 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
-</head>
-<body>
-    <h1>Stream</h1>
-    <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
-    <audio id="audio" controls autoplay></audio>
-    <input id="secret" type="password" />
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stream</title>
+    </head>
+    <body>
+        <h1>Stream</h1>
+        <img id="video" src="" alt="Video Stream" style="width: 640px; height: 480px;"/>
 
-    <script>
-        const socket = io();
-
-        let bufferSize = 4410;
-
-        let secret = "";
-
-        document.getElementById("secret").addEventListener("input", (e) =>
-        {
-            secret = document.getElementById("secret").value;
-            console.log(secret);
-        });
-
-        socket.on('connect', () => {
-            console.log('WebSocket connection established');
+        <script>
 
             setInterval(() =>
             {
-                socket.emit('get_frame', { 'secret': secret, });
-            }, 100);
+                getFrame();
+            }, 250);
 
-            setInterval(() =>
+            const getFrame = () =>
             {
-                socket.emit('get_audio', { 'secret': secret, });
-            }, 100);
-
-        });
-
-        socket.on('video_frame', (data) => {
-            document.getElementById('video').src = data.image;
-        });
-
-        socket.on('audio_data', function(msg) {
-            let audioContext = new window.AudioContext();
-            let byteArray = new Float32Array(msg.data);
-            var ab = audioContext.createBuffer(1, byteArray.length, audioContext.sampleRate);
-            var bs = audioContext.createBufferSource();
-            ab.getChannelData(0).set(byteArray);
-            bs.buffer = ab;
-            bs.connect(audioContext.destination);
-            bs.start(0);
-        });
-    </script>
-</body>
+                fetch('/frame',
+                    {
+                        method: "GET",
+                    }
+                )
+                .then((frame) => frame.text())
+                .then((frame) =>
+                {
+                    document.getElementById('video').src = data.image;
+                })
+            };
+        </script>
+    </body>
 </html>
